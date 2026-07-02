@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>商品列表</title>
+    <style>
+        /* 暖色风格，与之前保持一致 */
+        body { font-family: "Microsoft YaHei", sans-serif; padding:20px; background:#FFF8F0; }
+        .container {
+            max-width:1200px;
+            margin:0 auto;
+            background:#ffffff;
+            padding:28px 32px;
+            border-radius:24px;
+            box-shadow:0 4px 24px rgba(180,130,100,0.08);
+            border:1px solid #F0E6DD;
+        }
+        h2 { color:#5A3E2B; border-bottom:2px solid #F0E6DD; padding-bottom:12px; }
+        .search-form {
+            display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+            margin:20px 0; padding:16px 20px; background:#FDF8F4; border-radius:16px;
+        }
+        .search-form input, .search-form select {
+            padding:8px 14px; border:2px solid #F0E6DD; border-radius:10px; font-size:14px;
+            background:#fff; color:#5A3E2B; outline:none; transition:0.3s;
+        }
+        .search-form input:focus, .search-form select:focus { border-color:#E8A87C; box-shadow:0 0 0 4px rgba(232,168,124,0.15); }
+        .btn {
+            padding:8px 20px; border-radius:10px; text-decoration:none; font-size:14px;
+            border:none; cursor:pointer; transition:0.3s; font-weight:500;
+        }
+        .btn-primary { background:#E8A87C; color:#fff; }
+        .btn-primary:hover { background:#D4835A; transform:translateY(-2px); }
+        .btn-danger { background:#E8A0A0; color:#fff; }
+        .btn-danger:hover { background:#D47878; }
+        .btn-warning { background:#F5C89A; color:#5A3E2B; }
+        .btn-warning:hover { background:#E8B07A; }
+        table { width:100%; border-collapse:collapse; margin-top:15px; }
+        th { background:#FDF6F0; color:#5A3E2B; padding:12px; text-align:left; font-weight:600; }
+        td { padding:12px; border-bottom:1px solid #F0E6DD; }
+        .actions a { margin-right:8px; }
+        .pagination {
+            margin-top:20px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+        }
+        .pagination a, .pagination span {
+            padding:6px 14px; border-radius:8px; text-decoration:none; border:1px solid #F0E6DD;
+            color:#5A3E2B; background:#fff; transition:0.3s;
+        }
+        .pagination a:hover { background:#FDF6F0; border-color:#E8A87C; }
+        .pagination .current { background:#E8A87C; color:#fff; border-color:#E8A87C; }
+        .empty { text-align:center; color:#B8A08E; padding:30px; }
+        .status-badge {
+            display:inline-block; padding:2px 12px; border-radius:20px; font-size:12px; font-weight:500;
+        }
+        .status-on { background:#E8F5E9; color:#2E7D32; }
+        .status-off { background:#FDE8E8; color:#C0392B; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>📦 商品管理</h2>
+    <form class="search-form" method="get" th:action="@{/product/list}">
+        <input type="text" name="name" placeholder="商品名称" th:value="${name}">
+        <select name="categoryId">
+            <option value="">全部分类</option>
+            <option th:each="c : ${categoryList}" th:value="${c.id}" th:text="${c.name}" th:selected="${categoryId == c.id}"></option>
+        </select>
+        <input type="number" name="minPrice" placeholder="最低价" step="0.01" th:value="${minPrice}" style="width:100px;">
+        <input type="number" name="maxPrice" placeholder="最高价" step="0.01" th:value="${maxPrice}" style="width:100px;">
+        <button type="submit" class="btn btn-primary">查询</button>
+        <a href="/product/add" class="btn btn-primary" sec:authorize="hasRole('admin')">➕ 新增商品</a>
+    </form>
+    <table>
+        <thead>
+        <tr><th>ID</th><th>名称</th><th>价格</th><th>库存</th><th>状态</th><th>分类</th><th>描述</th><th sec:authorize="hasRole('admin')">操作</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${pageInfo.list}">
+            <td th:text="${p.id}"></td>
+            <td th:text="${p.name}"></td>
+            <td th:text="${p.price}"></td>
+            <td th:text="${p.stock}"></td>
+            <td><span class="status-badge" th:classappend="${p.status == 1 ? 'status-on' : 'status-off'}" th:text="${p.status == 1 ? '上架' : '下架'}"></span></td>
+            <td th:text="${p.categoryName}"></td>
+            <td th:text="${p.description}"></td>
+            <!-- 只有管理员才显示操作列 -->
+            <td sec:authorize="hasRole('admin')" class="actions">
+                <a th:href="@{/product/edit/{id}(id=${p.id})}" class="btn btn-warning">编辑</a>
+                <a th:href="@{/product/delete/{id}(id=${p.id})}" class="btn btn-danger" onclick="return confirm('确认删除？')">删除</a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(pageInfo.list)}">
+            <td colspan="8" class="empty">暂无商品</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- ===== 分页区域（已携带全部查询参数） ===== -->
+    <div class="pagination" th:if="${pageInfo.pages > 1}">
+        <a th:href="@{/product/list(pageNum=1, size=${pageInfo.pageSize}, categoryId=${categoryId}, name=${name}, minPrice=${minPrice}, maxPrice=${maxPrice})}">首页</a>
+        <a th:href="@{/product/list(pageNum=${pageInfo.prePage}, size=${pageInfo.pageSize}, categoryId=${categoryId}, name=${name}, minPrice=${minPrice}, maxPrice=${maxPrice})}" th:unless="${pageInfo.isFirstPage}">上一页</a>
+        <span class="current" th:text="${pageInfo.pageNum}"></span>
+        <span> / </span>
+        <span th:text="${pageInfo.pages}"></span>
+        <a th:href="@{/product/list(pageNum=${pageInfo.nextPage}, size=${pageInfo.pageSize}, categoryId=${categoryId}, name=${name}, minPrice=${minPrice}, maxPrice=${maxPrice})}" th:unless="${pageInfo.isLastPage}">下一页</a>
+        <a th:href="@{/product/list(pageNum=${pageInfo.pages}, size=${pageInfo.pageSize}, categoryId=${categoryId}, name=${name}, minPrice=${minPrice}, maxPrice=${maxPrice})}">尾页</a>
+        <span style="margin-left:15px;color:#8B7355;">共 <span th:text="${pageInfo.total}"></span> 条</span>
+    </div>
+</div>
+</body>
+</html>

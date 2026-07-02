@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>注册 - 智慧商品管理系统</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #FFF8F0;
+            background-image: radial-gradient(ellipse at 30% 20%, #FDE8D0 0%, transparent 60%),
+            radial-gradient(ellipse at 70% 80%, #FADDC8 0%, transparent 50%);
+        }
+        .register-card {
+            background: #FFFFFF;
+            border-radius: 32px;
+            padding: 40px 36px 32px;
+            width: 440px;
+            max-width: 94%;
+            box-shadow: 0 20px 60px rgba(180, 130, 100, 0.18);
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        .brand { text-align:center; margin-bottom: 24px; }
+        .brand h2 { font-size: 22px; color: #5A3E2B; }
+        .brand .sub { font-size: 13px; color: #B8A08E; }
+        .error { background:#FDE8E8; color:#C0392B; padding:10px; border-radius:10px; margin-bottom:16px; font-size:14px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display:block; font-size:14px; font-weight:500; color:#5A3E2B; margin-bottom:4px; }
+        .form-group input {
+            width:100%; padding:12px 16px; background:#FAF6F2; border:2px solid #F0E6DD; border-radius:12px;
+            font-size:15px; color:#5A3E2B; transition:all 0.3s; outline:none;
+        }
+        .form-group input:focus { border-color:#E8A87C; box-shadow:0 0 0 4px rgba(232,168,124,0.2); background:#fff; }
+        .code-group { display:flex; gap:10px; }
+        .code-group input { flex:1; }
+        .code-group button {
+            padding:0 20px; background:#E8A87C; color:#fff; border:none; border-radius:12px;
+            font-size:14px; cursor:pointer; transition:0.3s; white-space:nowrap;
+        }
+        .code-group button:hover { background:#D4835A; }
+        .code-group button:disabled { background:#C4B5A8; cursor:not-allowed; }
+        .btn-register {
+            width:100%; padding:14px; background:linear-gradient(135deg,#E8A87C,#D4835A);
+            border:none; border-radius:14px; font-size:18px; font-weight:600; color:#fff;
+            cursor:pointer; transition:0.3s; margin-top:6px;
+        }
+        .btn-register:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(212,131,90,0.35); }
+        .login-link { text-align:center; margin-top:18px; font-size:14px; color:#8B7355; }
+        .login-link a { color:#D4835A; text-decoration:none; font-weight:500; }
+        .login-link a:hover { text-decoration:underline; }
+    </style>
+</head>
+<body>
+<div class="register-card">
+    <div class="brand">
+        <h2>📝 注册账号</h2>
+        <div class="sub">加入智慧商品管理系统</div>
+    </div>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+    <form th:action="@{/register}" method="post">
+        <div class="form-group">
+            <label>用户名 *</label>
+            <input type="text" name="username" required>
+        </div>
+        <div class="form-group">
+            <label>密码 *</label>
+            <input type="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label>确认密码 *</label>
+            <input type="password" name="confirmPassword" required>
+        </div>
+        <div class="form-group">
+            <label>真实姓名</label>
+            <input type="text" name="realName">
+        </div>
+        <div class="form-group">
+            <label>邮箱 *</label>
+            <input type="email" name="email" id="email" required>
+        </div>
+        <div class="form-group">
+            <label>手机号</label>
+            <input type="text" name="phone">
+        </div>
+        <div class="form-group">
+            <label>验证码 *</label>
+            <div class="code-group">
+                <input type="text" name="verifyCode" placeholder="6位数字" required maxlength="6">
+                <button type="button" id="sendCodeBtn">获取验证码</button>
+            </div>
+        </div>
+        <button type="submit" class="btn-register">注 册</button>
+    </form>
+    <div class="login-link">已有账号？<a href="/login">去登录</a></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(function(){
+        var btn=$('#sendCodeBtn'), email=$('#email'), count=60;
+        btn.on('click',function(){
+            var e=email.val();
+            if(!e || !/^[\w.-]+@[\w.-]+\.\w+$/.test(e)){ alert('请输入正确的邮箱'); return; }
+            btn.prop('disabled',true);
+            var timer=setInterval(function(){
+                count--; btn.text(count+'s');
+                if(count<=0){ clearInterval(timer); btn.text('获取验证码'); btn.prop('disabled',false); count=60; }
+            },1000);
+            $.post('/sendCode',{email:e},function(res){
+                if(res.success) alert(res.msg);
+                else { alert(res.msg); clearInterval(timer); btn.text('获取验证码'); btn.prop('disabled',false); count=60; }
+            }).fail(function(){ alert('请求失败'); clearInterval(timer); btn.text('获取验证码'); btn.prop('disabled',false); count=60; });
+        });
+    });
+</script>
+</body>
+</html>

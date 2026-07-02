@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>智慧商品信息管理系统</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: "Microsoft YaHei", sans-serif; background:#FFF8F0; }
+        /* 顶部导航 */
+        .header {
+            height:60px;
+            background: linear-gradient(135deg, #E8A87C, #D4835A);
+            color: #fff;
+            line-height:60px;
+            padding:0 30px;
+            position:fixed; top:0; left:0; right:0; z-index:100;
+            font-size:20px;
+            letter-spacing:2px;
+            box-shadow: 0 4px 12px rgba(180,130,100,0.2);
+        }
+        .header .user-info { float:right; font-size:14px; font-weight:normal; }
+        .header .user-info a { color:#fef0e6; text-decoration:none; margin-left:20px; }
+        .header .user-info a:hover { color:#fff; text-decoration:underline; }
+        /* 侧边栏 */
+        .sidebar {
+            width:200px;
+            background: #FFFFFF;
+            position:fixed; top:60px; left:0; bottom:0;
+            box-shadow: 2px 0 16px rgba(180,130,100,0.08);
+            padding-top:20px;
+            border-right: 1px solid #F0E6DD;
+        }
+        .sidebar a {
+            display:block;
+            padding:14px 24px;
+            color: #5A3E2B;
+            text-decoration:none;
+            border-left:4px solid transparent;
+            transition:all 0.3s;
+            font-size:15px;
+            font-weight:500;
+        }
+        .sidebar a:hover {
+            background: #FDF6F0;
+            border-left-color: #E8A87C;
+        }
+        .sidebar a.active { background:#FDF6F0; border-left-color:#D4835A; }
+        /* 主内容 */
+        .main-content {
+            margin-left:200px;
+            margin-top:60px;
+            height:calc(100vh - 60px);
+            padding:20px;
+        }
+        iframe {
+            width:100%;
+            height:100%;
+            border:none;
+            border-radius:20px;
+            box-shadow: 0 4px 20px rgba(180,130,100,0.08);
+            background:#fff;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    🛒 智慧商品信息管理系统
+    <span class="user-info" sec:authorize="isAuthenticated()">
+            <span sec:authentication="name"></span>
+            <a th:href="@{/logout}">退出</a>
+        </span>
+</div>
+<div class="sidebar">
+    <a href="/welcome" target="mainFrame">🏠 欢迎页</a>
+    <a href="/category/list" target="mainFrame" sec:authorize="hasRole('admin')">📂 分类管理</a>
+    <a href="/product/list" target="mainFrame">📦 商品管理</a>
+    <a href="/product/add" target="mainFrame" sec:authorize="hasAnyRole('admin')">➕ 新增商品</a>
+</div>
+<div class="main-content">
+    <iframe name="mainFrame" src="/welcome"></iframe>
+</div>
+</body>
+</html>

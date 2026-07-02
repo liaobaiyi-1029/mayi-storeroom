@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>智慧商品管理系统 - 登录</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #FFF8F0;
+            background-image: radial-gradient(ellipse at 30% 20%, #FDE8D0 0%, transparent 60%),
+            radial-gradient(ellipse at 70% 80%, #FADDC8 0%, transparent 50%);
+        }
+        .login-card {
+            background: #FFFFFF;
+            border-radius: 32px;
+            padding: 48px 44px 36px;
+            width: 440px;
+            max-width: 94%;
+            box-shadow: 0 20px 60px rgba(180, 130, 100, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: transform 0.25s;
+        }
+        .login-card:hover { transform: translateY(-3px); }
+        .brand { text-align:center; margin-bottom: 32px; }
+        .brand-icon {
+            display: inline-block;
+            background: linear-gradient(135deg, #E8A87C, #D4835A);
+            width: 64px; height: 64px;
+            line-height: 64px;
+            border-radius: 20px;
+            font-size: 32px;
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(212, 131, 90, 0.3);
+            margin-bottom: 14px;
+        }
+        .brand h1 {
+            font-size: 24px;
+            color: #5A3E2B;
+            letter-spacing: 1px;
+        }
+        .brand .subtitle {
+            font-size: 13px;
+            color: #B8A08E;
+            letter-spacing: 3px;
+        }
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+        .message.error { background: #FDE8E8; color: #C0392B; border:1px solid #F5C8C8; }
+        .message.success { background: #E8F5E9; color: #2E7D32; border:1px solid #C8E6C9; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #5A3E2B;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #FAF6F2;
+            border: 2px solid #F0E6DD;
+            border-radius: 14px;
+            font-size: 15px;
+            color: #5A3E2B;
+            transition: all 0.3s;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: #E8A87C;
+            box-shadow: 0 0 0 4px rgba(232, 168, 124, 0.2);
+            background: #FFFFFF;
+        }
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 6px 0 24px;
+            font-size: 14px;
+        }
+        .form-options label { color: #8B7355; cursor: pointer; }
+        .form-options a { color: #B8A08E; text-decoration: none; }
+        .form-options a:hover { color: #D4835A; }
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #E8A87C, #D4835A);
+            border: none;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(212, 131, 90, 0.35);
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 14px;
+            color: #8B7355;
+        }
+        .register-link a { color: #D4835A; text-decoration: none; font-weight: 500; }
+        .register-link a:hover { text-decoration: underline; }
+        .footer { text-align:center; margin-top: 20px; font-size:12px; color:#C4B5A8; }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <div class="brand">
+        <div class="brand-icon">🛒</div>
+        <h1>智慧商品管理系统</h1>
+        <div class="subtitle">SMART SHOP</div>
+    </div>
+
+    <div th:if="${param.error}" class="message error">✕ 用户名或密码错误</div>
+    <div th:if="${param.logout}" class="message success">✓ 已安全退出</div>
+    <div th:if="${param.registered}" class="message success">✓ 注册成功，请登录</div>
+
+    <form th:action="@{/doLogin}" method="post">
+        <div class="form-group">
+            <label>用户名</label>
+            <input type="text" name="username" placeholder="请输入用户名" required autofocus>
+        </div>
+        <div class="form-group">
+            <label>密码</label>
+            <input type="password" name="password" placeholder="请输入密码" required>
+        </div>
+        <div class="form-options">
+            <label><input type="checkbox" name="remember-me"> 记住我</label>
+            <a href="#">忘记密码？</a>
+        </div>
+        <button type="submit" class="btn-login">登 录</button>
+    </form>
+    <div class="register-link">还没有账号？<a href="/register">立即注册</a></div>
+    <div class="footer">© 2026 智慧商品信息管理系统</div>
+</div>
+</body>
+</html>

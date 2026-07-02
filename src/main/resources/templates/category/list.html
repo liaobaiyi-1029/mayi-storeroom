@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>分类列表</title>
+    <style>
+        /* 直接复制 product/list.html 的样式，只改表格头和标题 */
+        body { font-family: "Microsoft YaHei", sans-serif; padding:20px; background:#FFF8F0; }
+        .container { max-width:900px; margin:0 auto; background:#ffffff; padding:28px 32px; border-radius:24px; box-shadow:0 4px 24px rgba(180,130,100,0.08); border:1px solid #F0E6DD; }
+        h2 { color:#5A3E2B; border-bottom:2px solid #F0E6DD; padding-bottom:12px; }
+        .toolbar { margin:20px 0; }
+        .btn { display:inline-block; padding:8px 20px; border-radius:10px; text-decoration:none; font-size:14px; border:none; cursor:pointer; transition:0.3s; }
+        .btn-primary { background:#E8A87C; color:#fff; }
+        .btn-primary:hover { background:#D4835A; }
+        .btn-danger { background:#E8A0A0; color:#fff; }
+        .btn-danger:hover { background:#D47878; }
+        .btn-warning { background:#F5C89A; color:#5A3E2B; }
+        .btn-warning:hover { background:#E8B07A; }
+        table { width:100%; border-collapse:collapse; margin-top:15px; }
+        th { background:#FDF6F0; color:#5A3E2B; padding:12px; text-align:left; }
+        td { padding:12px; border-bottom:1px solid #F0E6DD; }
+        .actions a { margin-right:8px; }
+        .empty { text-align:center; color:#B8A08E; padding:30px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>📂 分类管理</h2>
+    <div class="toolbar">
+        <a href="/category/add" class="btn btn-primary">➕ 新增分类</a>
+    </div>
+    <table>
+        <thead>
+        <tr><th>ID</th><th>名称</th><th>描述</th><th>操作</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${categoryList}">
+            <td th:text="${c.id}"></td>
+            <td th:text="${c.name}"></td>
+            <td th:text="${c.description}"></td>
+            <td class="actions">
+                <a th:href="@{/category/edit/{id}(id=${c.id})}" class="btn btn-warning">编辑</a>
+                <a th:href="@{/category/delete/{id}(id=${c.id})}" class="btn btn-danger" onclick="return confirm('确认删除？')">删除</a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(categoryList)}">
+            <td colspan="4" class="empty">暂无分类</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

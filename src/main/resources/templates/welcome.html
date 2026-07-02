@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            margin:0;
+            background: #FFF8F0;
+            background-image: radial-gradient(ellipse at 30% 40%, #FDE8D0 0%, transparent 60%);
+        }
+        .welcome-card {
+            text-align:center;
+            padding:50px 60px;
+            background:rgba(255,255,255,0.8);
+            backdrop-filter:blur(8px);
+            border-radius:32px;
+            box-shadow:0 16px 48px rgba(180,130,100,0.12);
+            border:1px solid rgba(255,255,255,0.6);
+            max-width:500px;
+        }
+        h1 { font-size:36px; color:#5A3E2B; margin-bottom:8px; }
+        .sub { font-size:18px; color:#8B7355; margin-bottom:10px; }
+        .role-badge {
+            display:inline-block;
+            background:#E8A87C;
+            color:#fff;
+            padding:4px 18px;
+            border-radius:20px;
+            font-size:14px;
+            margin-bottom:20px;
+        }
+        .links {
+            margin-top:30px;
+            display:flex;
+            gap:20px;
+            justify-content:center;
+            flex-wrap:wrap;
+        }
+        .links a {
+            display:inline-block;
+            padding:12px 28px;
+            background:linear-gradient(135deg,#E8A87C,#D4835A);
+            color:#fff;
+            border-radius:30px;
+            text-decoration:none;
+            transition:0.3s;
+            font-weight:500;
+        }
+        .links a:hover {
+            transform:translateY(-3px);
+            box-shadow:0 12px 24px rgba(212,131,90,0.3);
+        }
+        .footer {
+            margin-top:24px;
+            color:#B8A08E;
+            font-size:14px;
+        }
+    </style>
+</head>
+<body>
+<div class="welcome-card">
+    <!-- ===== 根据角色显示不同的欢迎语 ===== -->
+    <h1>
+            <span sec:authorize="hasRole('admin')">
+                👑 管理员 <span sec:authentication="name"></span>，欢迎回来！
+            </span>
+        <span sec:authorize="hasRole('user')">
+                👤 亲爱的用户 <span sec:authentication="name"></span>，欢迎回来！
+            </span>
+    </h1>
+
+    <p class="sub">
+        <span sec:authorize="hasRole('admin')">今天要管理点什么？</span>
+        <span sec:authorize="hasRole('user')">看看商品吧，祝您愉快！</span>
+    </p>
+
+
+    <!-- 根据角色显示不同的功能入口 -->
+    <div class="links">
+        <!-- 商品管理：所有登录用户可见 -->
+        <a href="/product/list">📦 商品管理</a>
+
+        <span sec:authorize="hasRole('admin')">
+                <a href="/category/list">📂 分类管理</a>
+                <a href="/product/add">➕ 新增商品</a>
+            </span>
+    </div>
+
+    <div class="footer">智慧商品 · 值得一看</div>
+</div>
+</body>
+</html>
